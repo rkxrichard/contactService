@@ -1,6 +1,7 @@
 package ru.StudentDB.studentDB.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.StudentDB.studentDB.models.Contact;
 import ru.StudentDB.studentDB.repositories.ContactRepository;
@@ -33,5 +34,18 @@ public class ContactService {
 
     public Contact createContact(Contact contact) {
         return contactRepository.save(contact);
+    }
+
+    public ResponseEntity<Contact> updateContact(Long id, Contact updatedContact) {
+        Optional<Contact> existingContact = contactRepository.findById(id);
+
+        if (existingContact.isPresent()) {
+            Contact contactToUpdate = existingContact.get();
+            contactToUpdate.setName(updatedContact.getName());
+            contactToUpdate.setEmail(updatedContact.getEmail());
+            contactToUpdate.setPhone(updatedContact.getPhone());
+            return ResponseEntity.ok(contactRepository.save(contactToUpdate));
+        }
+        return ResponseEntity.notFound().build();
     }
 }
